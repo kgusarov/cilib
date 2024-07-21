@@ -1,0 +1,60 @@
+name: "Release"
+
+on:
+  workflow_call:
+    secrets:
+      ADO_MAVEN_USERNAME:
+        required: true
+      ADO_MAVEN_PASSWORD:
+        required: true
+      BUILDER_APP_PRIVATE_KEY:
+        required: true
+
+run-name: "[${{ github.sha }}] release"
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  perform-release:
+    name: "Perform Release"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'write'
+      packages: 'read'
+      actions: 'read'
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: generate-token
+        name: Generate Builder Token
+        with:
+          app-id: ${{ vars.BUILDER_APP_ID }}
+          private-key: ${{ secrets.BUILDER_APP_PRIVATE_KEY }}
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "corretto"
+          java-version: "21"
+          cache: "maven"
+      - uses: s4u/maven-settings-action@v3.0.0
+        with:
+          servers: |
+            [{
+              "id": "public-artifacts",
+              "username": "${{ secrets.ADO_MAVEN_USERNAME }}",
+              "password": "${{ secrets.ADO_MAVEN_PASSWORD }}"
+            }]
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "latest"
+          cache: "npm"
+      - name: Git Config
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@kgusarov.org"
+      - name: NPM Install
+        run: npm ci
+      - name: Perform Release
+        run: npx semantic-release

@@ -1,0 +1,33 @@
+name: "Post Commit Hook"
+
+on:
+  workflow_call:
+    secrets:
+      ADO_MAVEN_USERNAME:
+        required: true
+      ADO_MAVEN_PASSWORD:
+        required: true
+
+run-name: "[${{ github.sha }}] build"
+
+jobs:
+  run-build:
+    runs-on: ubuntu-latest
+    name: "Run Build"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "corretto"
+          java-version: "21"
+          cache: "maven"
+      - uses: s4u/maven-settings-action@v3.0.0
+        with:
+          servers: |
+            [{
+              "id": "public-artifacts",
+              "username": "${{ secrets.ADO_MAVEN_USERNAME }}",
+              "password": "${{ secrets.ADO_MAVEN_PASSWORD }}"
+            }]
+      - name: Run Maven Build
+        run: mvn -B clean verify

@@ -1,2 +1,3 @@
-# cilib
-Set of reusable Github Workflow Templates
+# CI Library
+
+Set of reusable GitHub Workflow Templates
