@@ -12,9 +12,6 @@ on:
 
 run-name: "[${{ github.sha }}] release"
 
-env:
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
 jobs:
   perform-release:
     name: "Perform Release"
