@@ -7,7 +7,7 @@ on:
         required: true
       ADO_MAVEN_PASSWORD:
         required: true
-      PAT_TOKEN :
+      BUILDER_APP_PRIVATE_KEY :
         required: true
 
 run-name: "[${{ github.sha }}] release"
@@ -21,6 +21,12 @@ jobs:
       packages: 'read'
       actions: 'read'
     steps:
+      - uses: actions/create-github-app-token@v1
+        id: generate-token
+        name: Generate Builder Token
+        with:
+          app-id: ${{ vars.BUILDER_APP_ID }}
+          private-key: ${{ secrets.BUILDER_APP_PRIVATE_KEY }}
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT_TOKEN }}
