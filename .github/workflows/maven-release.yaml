@@ -7,7 +7,7 @@ on:
         required: true
       ADO_MAVEN_PASSWORD:
         required: true
-      BUILDER_APP_PRIVATE_KEY :
+      BUILDER_APP_PRIVATE_KEY:
         required: true
 
 run-name: "[${{ github.sha }}] release"
