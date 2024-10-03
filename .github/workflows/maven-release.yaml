@@ -7,7 +7,7 @@ on:
         required: true
       ADO_MAVEN_PASSWORD:
         required: true
-      GITHUB_TOKEN :
+      PAT_TOKEN :
         required: true
 
 run-name: "[${{ github.sha }}] release"
@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PAT_TOKEN }}
       - uses: actions/setup-java@v4
         with:
           distribution: "corretto"
